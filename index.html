@@ -36,7 +36,7 @@
   </head>
   <body>
     <div id="app"></div>
-    <script type="module" src="./src/app.js?v=15"></script>
+    <script type="module" src="./src/app.js?v=16"></script>
     <script>
       const replaceLegacyBrand = () => document.querySelectorAll('.brand, .entry-art').forEach(brand => {
         const legacyMark = brand.querySelector('span:first-child');
@@ -106,7 +106,7 @@
       const rewardObserver=new MutationObserver(celebrateRewards);rewardObserver.observe(document.querySelector('#app'),{childList:true,subtree:true});celebrateRewards();
     </script>
     <script>
-      const fixStreakLabel=()=>document.querySelectorAll('.login-streak').forEach(badge=>{const number=badge.querySelector('span');const label=badge.querySelector('small');if(number&&label)label.textContent=number.textContent==='1'?'dia':'dias'});new MutationObserver(fixStreakLabel).observe(document.querySelector('#app'),{childList:true,subtree:true});fixStreakLabel();
+      const fixStreakLabel=()=>document.querySelectorAll('.login-streak').forEach(badge=>{const number=badge.querySelector('span');const label=badge.querySelector('small');if(number&&label){const nextLabel=number.textContent==='1'?'dia':'dias';if(label.textContent!==nextLabel)label.textContent=nextLabel}});new MutationObserver(fixStreakLabel).observe(document.querySelector('#app'),{childList:true,subtree:true});fixStreakLabel();
     </script>
   </body>
 </html>
