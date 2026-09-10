@@ -36,7 +36,7 @@
   </head>
   <body>
     <div id="app"></div>
-    <script type="module" src="./src/app.js?v=17"></script>
+    <script type="module" src="./src/app.js?v=21"></script>
     <script>
       const replaceLegacyBrand = () => document.querySelectorAll('.brand, .entry-art').forEach(brand => {
         const legacyMark = brand.querySelector('span:first-child');
@@ -68,9 +68,16 @@
     <script>
       document.addEventListener('keyup', event => {
         if (event.key === 'Enter' && event.target.matches('#global-search') && event.target.value.trim()) {
-          document.querySelector('[data-page="library"]')?.click();
+          event.preventDefault();
+          const query=event.target.value.trim();
+          document.querySelector('[data-action="add"]')?.click();
+          setTimeout(()=>{const form=document.querySelector('#tmdb-search'),input=form?.querySelector('input');if(form&&input){input.value=query;form.requestSubmit()}},0);
         }
       });
+      const smoothGlobalSearch = () => { const input=document.querySelector('#global-search'); if(!input||!document.querySelector('.movie-grid')||input.dataset.smoothSearch)return; input.dataset.smoothSearch='true'; input.oninput=()=>{const query=input.value.trim().toLowerCase();document.querySelectorAll('.movie-tile').forEach(tile=>{tile.style.display=tile.textContent.toLowerCase().includes(query)?'':'none'});}; };
+      new MutationObserver(smoothGlobalSearch).observe(document.querySelector('#app'),{childList:true,subtree:true});
+      smoothGlobalSearch();
+      document.addEventListener('input',event=>{if(event.target.matches('#global-search')&&document.querySelector('.movie-grid')){event.stopImmediatePropagation();const query=event.target.value.trim().toLowerCase();document.querySelectorAll('.movie-tile').forEach(tile=>{tile.style.display=tile.textContent.toLowerCase().includes(query)?'':'none'})}},true);
     </script>
     <style>
       .cinema-page{padding-bottom:50px}.cinema-player{position:relative;max-width:940px;margin:42px auto 18px;background:#050507;border:1px solid var(--line);aspect-ratio:16/9;display:grid;place-items:center;overflow:hidden}.cinema-player video{width:100%;height:100%;display:none;background:#000}.cinema-empty{display:grid;gap:8px;text-align:center;color:#aaa}.cinema-empty b{font:32px Delight;color:#f4f0eb}.cinema-controls{max-width:940px;margin:auto;display:grid;gap:12px}.cinema-upload,.cinema-url-form button{background:#f0eeea;color:#161519;border-radius:22px;padding:12px 16px;font-weight:700;font-size:12px;text-align:center;cursor:pointer}.cinema-upload input{display:none}.cinema-url-form{display:grid;grid-template-columns:1fr auto;gap:8px}.cinema-url-form input{min-width:0;background:#151519;border:1px solid var(--line);border-radius:7px;padding:12px;color:#fff;outline:0}.cinema-controls small{color:#888;font-size:10px;line-height:1.5}.news-modal{position:fixed;inset:0;z-index:40;background:#000b;display:grid;place-items:center;padding:18px}.news-card{position:relative;width:min(520px,100%);background:#171519;border:1px solid #51444a;padding:28px;box-shadow:0 24px 80px #000}.news-card h2{font:38px/.95 Delight;margin:8px 0 16px}.news-card p:not(.eyebrow){color:#aaa;line-height:1.6;font-size:12px}.news-close{position:absolute;right:16px;top:12px;color:#aaa;font-size:22px}@media(max-width:760px){.cinema-player{margin-top:28px}.cinema-url-form{grid-template-columns:1fr}.cinema-empty b{font-size:26px}}
@@ -98,11 +105,16 @@
     <script>
       const localDay=()=>{const now=new Date();return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`};
       const updateLoginStreak=()=>{if(!localStorage.getItem('mytake-session'))return;const today=localDay(),last=localStorage.getItem('mytake-login-day'),current=Number(localStorage.getItem('mytake-login-streak')||0);if(last===today)return current;const previous=new Date();previous.setDate(previous.getDate()-1);const yesterday=`${previous.getFullYear()}-${String(previous.getMonth()+1).padStart(2,'0')}-${String(previous.getDate()).padStart(2,'0')}`;const streak=last===yesterday?current+1:1;localStorage.setItem('mytake-login-day',today);localStorage.setItem('mytake-login-streak',String(streak));return streak};
-      const installStreak=()=>{const tools=document.querySelector('.nav-tools');if(!tools||tools.querySelector('.login-streak'))return;const streak=updateLoginStreak();if(!streak)return;const badge=document.createElement('span');badge.className='login-streak';badge.title=`Sequência de ${streak} dia${streak===1?'':'s'}`;badge.innerHTML=`<b>🔥</b><span>${streak}</span><small>${streak===1?'dia':'dias'}</small>`;tools.insertBefore(badge,tools.querySelector('[data-music]')||tools.querySelector('.avatar'))};
+      const installStreak=()=>{const tools=document.querySelector('.nav-tools');if(!tools||tools.querySelector('.login-streak'))return;const streak=Number(localStorage.getItem('mytake-login-streak')||0);const badge=document.createElement('span');badge.className='login-streak';badge.title=`Sequência de ${streak} dia${streak===1?'':'s'}`;badge.innerHTML=`<b>🔥</b><span>${streak}</span><small>${streak===1?'dia':'dias'}</small>`;tools.insertBefore(badge,tools.querySelector('[data-music]')||tools.querySelector('.avatar'))};
+      const refreshStreak=()=>{const badge=document.querySelector('.login-streak');if(!badge)return;const streak=Number(localStorage.getItem('mytake-login-streak')||0);badge.title=`Sequência de ${streak} dia${streak===1?'':'s'}`;badge.innerHTML=`<b>🔥</b><span>${streak}</span><small>${streak===1?'dia':'dias'}</small>`};
+      globalThis.recordStreakActivity=()=>{if(!localStorage.getItem('mytake-session'))return 0;const today=localDay(),last=localStorage.getItem('mytake-login-day'),current=Number(localStorage.getItem('mytake-login-streak')||0);if(last===today&&current>0){refreshStreak();return current}const previous=new Date();previous.setDate(previous.getDate()-1);const yesterday=`${previous.getFullYear()}-${String(previous.getMonth()+1).padStart(2,'0')}-${String(previous.getDate()).padStart(2,'0')}`;const streak=last===yesterday?current+1:1;localStorage.setItem('mytake-login-day',today);localStorage.setItem('mytake-login-streak',String(streak));refreshStreak();return streak};
       const streakObserver=new MutationObserver(installStreak);streakObserver.observe(document.querySelector('#app'),{childList:true,subtree:true});installStreak();
+      document.addEventListener('submit',event=>{if(event.target.matches('#login-form,#register-form'))setTimeout(()=>{if(localStorage.getItem('mytake-session'))globalThis.recordStreakActivity()},0)},true);
+      document.addEventListener('click',event=>{const target=event.target.closest?.('[data-import],[data-toggle="watched"]');if(target)setTimeout(()=>globalThis.recordStreakActivity(),0)},true);
+      document.addEventListener('change',event=>{if(event.target.matches('[data-field]'))setTimeout(()=>globalThis.recordStreakActivity(),0)},true);
     </script>
     <script>
-      const celebrateRewards=()=>{const cards=[...document.querySelectorAll('.reward-card.unlocked')];if(!cards.length)return;const unlocked=cards.map(card=>card.querySelector('h2')?.textContent).filter(Boolean),seen=JSON.parse(localStorage.getItem('mytake-seen-rewards')||'[]'),fresh=unlocked.filter(title=>!seen.includes(title));localStorage.setItem('mytake-seen-rewards',JSON.stringify(unlocked));if(!seen.length||!fresh.length||document.querySelector('.reward-toast'))return;const toast=document.createElement('div');toast.className='reward-toast';toast.innerHTML=`<div class="reward-toast-icon">✧</div><div><p>CONQUISTA DESBLOQUEADA</p><b>${fresh[0]}</b></div><button aria-label="Fechar">×</button>`;toast.querySelector('button').onclick=()=>toast.remove();document.body.append(toast);setTimeout(()=>toast.remove(),7000)};
+      const celebrateRewards=()=>{const cards=[...document.querySelectorAll('.reward-card.unlocked')];if(!cards.length)return;const unlocked=cards.map(card=>card.querySelector('h2')?.textContent).filter(Boolean),seen=JSON.parse(localStorage.getItem('mytake-seen-rewards')||'[]'),fresh=unlocked.filter(title=>!seen.includes(title));localStorage.setItem('mytake-seen-rewards',JSON.stringify(unlocked));if(!fresh.length||document.querySelector('.reward-toast'))return;const toast=document.createElement('div');toast.className='reward-toast';toast.innerHTML=`<div class="reward-toast-icon">✧</div><div><p>CONQUISTA DESBLOQUEADA</p><b>${fresh[0]}</b></div><button aria-label="Fechar">×</button>`;toast.querySelector('button').onclick=()=>toast.remove();document.body.append(toast);setTimeout(()=>toast.remove(),7000)};
       const rewardObserver=new MutationObserver(celebrateRewards);rewardObserver.observe(document.querySelector('#app'),{childList:true,subtree:true});celebrateRewards();
     </script>
   </body>
