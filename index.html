@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#09090b" />
     <meta name="description" content="Seu diário pessoal de cinema." />
     <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="stylesheet" href="./styles.css?v=6" />
+    <link rel="stylesheet" href="./styles.css?v=7" />
     <style>
       .brand { font-size: 0 !important; display: inline-flex !important; align-items: center; }
       .topbar .brand { width: 150px; height: 78px; justify-content: center; padding: 0; line-height: 0; flex: 0 0 150px; }
@@ -42,7 +42,7 @@
       }
     </script>
     <div id="app"></div>
-    <script type="module" src="./src/app.js?v=24"></script>
+    <script type="module" src="./src/app.js?v=25"></script>
     <script>
       const replaceLegacyBrand = () => document.querySelectorAll('.brand, .entry-art').forEach(brand => {
         const legacyMark = brand.querySelector('span:first-child');
@@ -86,8 +86,6 @@
       document.addEventListener('input',event=>{if(event.target.matches('#global-search')&&document.querySelector('.movie-grid')){event.stopImmediatePropagation();const query=event.target.value.trim().toLowerCase();document.querySelectorAll('.movie-tile').forEach(tile=>{tile.style.display=tile.textContent.toLowerCase().includes(query)?'':'none'})}},true);
     </script>
     <style>
-      .cinema-page{padding-bottom:50px}.cinema-player{position:relative;max-width:940px;margin:42px auto 18px;background:#050507;border:1px solid var(--line);aspect-ratio:16/9;display:grid;place-items:center;overflow:hidden}.cinema-player video{width:100%;height:100%;display:none;background:#000}.cinema-empty{display:grid;gap:8px;text-align:center;color:#aaa}.cinema-empty b{font:32px Delight;color:#f4f0eb}.cinema-controls{max-width:940px;margin:auto;display:grid;gap:12px}.cinema-upload,.cinema-url-form button{background:#f0eeea;color:#161519;border-radius:22px;padding:12px 16px;font-weight:700;font-size:12px;text-align:center;cursor:pointer}.cinema-upload input{display:none}.cinema-url-form{display:grid;grid-template-columns:1fr auto;gap:8px}.cinema-url-form input{min-width:0;background:#151519;border:1px solid var(--line);border-radius:7px;padding:12px;color:#fff;outline:0}.cinema-controls small{color:#888;font-size:10px;line-height:1.5}.news-modal{position:fixed;inset:0;z-index:40;background:#000b;display:grid;place-items:center;padding:18px}.news-card{position:relative;width:min(520px,100%);background:#171519;border:1px solid #51444a;padding:28px;box-shadow:0 24px 80px #000}.news-card h2{font:38px/.95 Delight;margin:8px 0 16px}.news-card p:not(.eyebrow){color:#aaa;line-height:1.6;font-size:12px}.news-close{position:absolute;right:16px;top:12px;color:#aaa;font-size:22px}@media(max-width:760px){.cinema-player{margin-top:28px}.cinema-url-form{grid-template-columns:1fr}.cinema-empty b{font-size:26px}}
-      .music-page{padding-bottom:50px}.music-panel{max-width:940px;margin:38px auto 0;border:1px solid var(--line);background:#121216;padding:24px}.music-now{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}.music-now h2{font:32px Delight;margin:4px 0}.music-now p{color:#999;font-size:11px}.music-now audio{width:min(420px,100%)}.music-actions{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}.music-upload,.music-save{background:#f0eeea;color:#161519;border-radius:22px;padding:11px 15px;font-weight:700;font-size:11px;cursor:pointer}.music-upload input{display:none}.music-save{border:1px solid #f0eeea}.music-list{display:grid;border-top:1px solid var(--line)}.music-track{display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;padding:13px 4px;border-bottom:1px solid #ffffff0b;text-align:left}.music-track button{color:#aaa}.music-track b{font-size:12px}.music-track small{display:block;color:#777;font-size:10px;margin-top:4px}.music-track.active b{color:var(--red)}.music-note{color:#888;font-size:10px;line-height:1.5;margin:18px 0 0}@media(max-width:760px){.music-panel{margin-top:25px;padding:16px}.music-now{grid-template-columns:1fr}.music-now h2{font-size:28px}.music-now audio{width:100%}}
       .login-streak{display:inline-flex;align-items:center;gap:4px;color:#f2b35f;font-size:11px;font-weight:700;white-space:nowrap}.login-streak b{font-size:15px}.login-streak small{color:#aaa;font-size:9px;font-weight:500}@media(max-width:760px){.login-streak small{display:none}}
       .reward-toast{position:fixed;right:24px;bottom:24px;z-index:45;display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:center;width:min(370px,calc(100vw - 32px));padding:14px 16px;background:#19171d;border:1px solid #d59a62;box-shadow:0 18px 60px #000b;animation:reward-pop .5s cubic-bezier(.2,.9,.2,1)}.reward-toast-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;font-size:23px;background:linear-gradient(135deg,#e66c60,#e8c56a,#7da9e8,#c58be8);color:#171519}.reward-toast p{margin:0;color:#e8b273;font:500 9px 'DM Mono';letter-spacing:1.3px}.reward-toast b{display:block;font:22px Delight;margin-top:3px}.reward-toast button{color:#aaa;font-size:20px}@keyframes reward-pop{from{opacity:0;transform:translateY(24px) scale(.92)}to{opacity:1;transform:none}}@media(max-width:760px){.reward-toast{right:16px;bottom:82px}}
     </style>
@@ -109,6 +107,9 @@
       const musicObserver=new MutationObserver(installMusicNav);musicObserver.observe(document.querySelector('#app'),{childList:true,subtree:true});installMusicNav();
     </script>
     <script>
+      const removeRetiredFeatures=()=>document.querySelectorAll('[data-cinema],[data-music],.cinema-page,.music-page').forEach(element=>element.remove());
+      new MutationObserver(removeRetiredFeatures).observe(document.querySelector('#app'),{childList:true,subtree:true});
+      removeRetiredFeatures();
       const localDay=()=>{const now=new Date();return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`};
       const updateLoginStreak=()=>{if(!localStorage.getItem('mytake-session'))return;const today=localDay(),last=localStorage.getItem('mytake-login-day'),current=Number(localStorage.getItem('mytake-login-streak')||0);if(last===today)return current;const previous=new Date();previous.setDate(previous.getDate()-1);const yesterday=`${previous.getFullYear()}-${String(previous.getMonth()+1).padStart(2,'0')}-${String(previous.getDate()).padStart(2,'0')}`;const streak=last===yesterday?current+1:1;localStorage.setItem('mytake-login-day',today);localStorage.setItem('mytake-login-streak',String(streak));return streak};
       const installStreak=()=>{const tools=document.querySelector('.nav-tools');if(!tools||tools.querySelector('.login-streak'))return;const streak=Number(localStorage.getItem('mytake-login-streak')||0);const badge=document.createElement('span');badge.className='login-streak';badge.title=`Sequência de ${streak} dia${streak===1?'':'s'}`;badge.innerHTML=`<b>🔥</b><span>${streak}</span><small>${streak===1?'dia':'dias'}</small>`;tools.insertBefore(badge,tools.querySelector('[data-music]')||tools.querySelector('.avatar'))};
