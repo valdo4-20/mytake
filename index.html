@@ -42,7 +42,7 @@
       }
     </script>
     <div id="app"></div>
-    <script type="module" src="./src/app.js?v=28"></script>
+    <script type="module" src="./src/app.js?v=30"></script>
     <script>
       const replaceLegacyBrand = () => document.querySelectorAll('.brand, .entry-art').forEach(brand => {
         const legacyMark = brand.querySelector('span:first-child');
@@ -54,7 +54,6 @@
           legacyMark.replaceWith(logo);
         }
       });
-      new MutationObserver(replaceLegacyBrand).observe(document.querySelector('#app'), {childList: true, subtree: true});
       replaceLegacyBrand();
     </script>
     <script>
@@ -81,7 +80,6 @@
         }
       });
       const smoothGlobalSearch = () => { const input=document.querySelector('#global-search'); if(!input||!document.querySelector('.movie-grid')||input.dataset.smoothSearch)return; input.dataset.smoothSearch='true'; input.oninput=()=>{const query=input.value.trim().toLowerCase();document.querySelectorAll('.movie-tile').forEach(tile=>{tile.style.display=tile.textContent.toLowerCase().includes(query)?'':'none'});}; };
-      new MutationObserver(smoothGlobalSearch).observe(document.querySelector('#app'),{childList:true,subtree:true});
       smoothGlobalSearch();
       document.addEventListener('input',event=>{if(event.target.matches('#global-search')&&document.querySelector('.movie-grid')){event.stopImmediatePropagation();const query=event.target.value.trim().toLowerCase();document.querySelectorAll('.movie-tile').forEach(tile=>{tile.style.display=tile.textContent.toLowerCase().includes(query)?'':'none'})}},true);
     </script>
@@ -95,7 +93,7 @@
       const bindCinema = () => { const video=document.querySelector('#cinema-video'), empty=document.querySelector('.cinema-empty'), file=document.querySelector('#cinema-file'), form=document.querySelector('#cinema-url-form'); if(!video||!file||!form)return; const play=src=>{video.src=src;video.style.display='block';empty.style.display='none';video.play().catch(()=>{})}; file.onchange=()=>{const selected=file.files?.[0];if(selected)play(URL.createObjectURL(selected))};form.onsubmit=event=>{event.preventDefault();play(document.querySelector('#cinema-url').value.trim())}; };
       const installCinemaNav = () => document.querySelectorAll('.topbar nav,.bottom-nav').forEach(nav=>{if(nav.querySelector('[data-cinema]'))return;const button=document.createElement('button');button.dataset.cinema='true';button.textContent='Cinema';button.onclick=showCinema;nav.append(button)});
       const showNews = () => {const key=new Date().toISOString().slice(0,10), count=Number(localStorage.getItem('mytake-news-count')||0), day=localStorage.getItem('mytake-news-day');if(day!==key){localStorage.setItem('mytake-news-day',key);localStorage.setItem('mytake-news-count','0')}if(count>=2||document.querySelector('.news-modal')||!document.querySelector('.topbar'))return;localStorage.setItem('mytake-news-count',String(count+1));const modal=document.createElement('div');modal.className='news-modal';modal.innerHTML='<section class="news-card"><button class="news-close" aria-label="Fechar">×</button><p class="eyebrow">NOVIDADES DO MYTAKE</p><h2>Uma nova sessão começa aqui.</h2><p>O Cinema agora aceita arquivos locais e links diretos de mídia. Também estamos preparando melhorias na biblioteca, nas recompensas e na experiência em dispositivos móveis.</p></section>';modal.querySelector('.news-close').onclick=()=>modal.remove();modal.onclick=e=>{if(e.target===modal)modal.remove()};document.body.append(modal)};
-      const uiObserver=new MutationObserver(()=>{installCinemaNav();showNews()});uiObserver.observe(document.querySelector('#app'),{childList:true,subtree:true});installCinemaNav();
+      const uiObserver={};
     </script>
     <script>
       let musicTracks=[];let musicIndex=-1;let musicUrls=[];
@@ -104,25 +102,24 @@
       const playMusic=index=>{const track=musicTracks[index];if(!track)return;musicIndex=index;const audio=document.querySelector('#music-audio');if(track.file){const url=musicUrls[index]||URL.createObjectURL(track.file);musicUrls[index]=url;audio.src=url}else{audio.removeAttribute('src')}document.querySelector('#music-title').textContent=track.name;document.querySelector('#music-status').textContent=track.file?'Arquivo local':'Selecione o arquivo novamente para tocar';audio.onended=()=>{if(musicIndex<musicTracks.length-1)playMusic(musicIndex+1)};renderMusicList();audio.play().catch(()=>{})};
       const showMusic=()=>{const main=document.querySelector('#app main');if(!main)return;main.outerHTML=musicMarkup;const saved=JSON.parse(localStorage.getItem('mytake-playlist')||'[]');musicTracks=saved.map(name=>({name,file:null}));musicUrls=[];musicIndex=-1;document.querySelector('#music-files').onchange=event=>{[...event.target.files].forEach(file=>musicTracks.push({name:file.name,file}));renderMusicList()};document.querySelector('#music-save').onclick=()=>{localStorage.setItem('mytake-playlist',JSON.stringify(musicTracks.map(track=>track.name)));document.querySelector('#music-status').textContent='Playlist salva neste navegador.'};renderMusicList()};
       const installMusicNav=()=>document.querySelectorAll('.nav-tools').forEach(tools=>{if(tools.querySelector('[data-music]'))return;const button=document.createElement('button');button.dataset.music='true';button.className='music-nav-button';button.type='button';button.title='Abrir player de músicas';button.textContent='♫';button.onclick=showMusic;tools.insertBefore(button,tools.querySelector('.avatar'))});
-      const musicObserver=new MutationObserver(installMusicNav);musicObserver.observe(document.querySelector('#app'),{childList:true,subtree:true});installMusicNav();
+      const musicObserver={};
     </script>
     <script>
-      const removeRetiredFeatures=()=>document.querySelectorAll('[data-cinema],[data-music],.cinema-page,.music-page').forEach(element=>element.remove());
-      new MutationObserver(removeRetiredFeatures).observe(document.querySelector('#app'),{childList:true,subtree:true});
+      const removeRetiredFeatures=()=>document.querySelectorAll('.cinema-page,.music-page').forEach(element=>element.remove());
       removeRetiredFeatures();
       const localDay=()=>{const now=new Date();return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`};
       const updateLoginStreak=()=>{if(!localStorage.getItem('mytake-session'))return;const today=localDay(),last=localStorage.getItem('mytake-login-day'),current=Number(localStorage.getItem('mytake-login-streak')||0);if(last===today)return current;const previous=new Date();previous.setDate(previous.getDate()-1);const yesterday=`${previous.getFullYear()}-${String(previous.getMonth()+1).padStart(2,'0')}-${String(previous.getDate()).padStart(2,'0')}`;const streak=last===yesterday?current+1:1;localStorage.setItem('mytake-login-day',today);localStorage.setItem('mytake-login-streak',String(streak));return streak};
       const installStreak=()=>{const tools=document.querySelector('.nav-tools');if(!tools||tools.querySelector('.login-streak'))return;const streak=Number(localStorage.getItem('mytake-login-streak')||0);const badge=document.createElement('span');badge.className='login-streak';badge.title=`Sequência de ${streak} dia${streak===1?'':'s'}`;badge.innerHTML=`<b>🔥</b><span>${streak}</span><small>${streak===1?'dia':'dias'}</small>`;tools.insertBefore(badge,tools.querySelector('[data-music]')||tools.querySelector('.avatar'))};
       const refreshStreak=()=>{const badge=document.querySelector('.login-streak');if(!badge)return;const streak=Number(localStorage.getItem('mytake-login-streak')||0);badge.title=`Sequência de ${streak} dia${streak===1?'':'s'}`;badge.innerHTML=`<b>🔥</b><span>${streak}</span><small>${streak===1?'dia':'dias'}</small>`};
       globalThis.recordStreakActivity=()=>{if(!localStorage.getItem('mytake-session'))return 0;const today=localDay(),last=localStorage.getItem('mytake-login-day'),current=Number(localStorage.getItem('mytake-login-streak')||0);if(last===today&&current>0){refreshStreak();return current}const previous=new Date();previous.setDate(previous.getDate()-1);const yesterday=`${previous.getFullYear()}-${String(previous.getMonth()+1).padStart(2,'0')}-${String(previous.getDate()).padStart(2,'0')}`;const streak=last===yesterday?current+1:1;localStorage.setItem('mytake-login-day',today);localStorage.setItem('mytake-login-streak',String(streak));refreshStreak();return streak};
-      const streakObserver=new MutationObserver(installStreak);streakObserver.observe(document.querySelector('#app'),{childList:true,subtree:true});installStreak();
+      installStreak();
       document.addEventListener('submit',event=>{if(event.target.matches('#login-form,#register-form'))setTimeout(()=>{if(localStorage.getItem('mytake-session'))globalThis.recordStreakActivity()},0)},true);
       document.addEventListener('click',event=>{const target=event.target.closest?.('[data-import],[data-toggle="watched"]');if(target)setTimeout(()=>globalThis.recordStreakActivity(),0)},true);
       document.addEventListener('change',event=>{if(event.target.matches('[data-field]'))setTimeout(()=>globalThis.recordStreakActivity(),0)},true);
     </script>
     <script>
       const celebrateRewards=()=>{const cards=[...document.querySelectorAll('.reward-card.unlocked')];if(!cards.length)return;const unlocked=cards.map(card=>card.querySelector('h2')?.textContent).filter(Boolean),seen=JSON.parse(localStorage.getItem('mytake-seen-rewards')||'[]'),fresh=unlocked.filter(title=>!seen.includes(title));localStorage.setItem('mytake-seen-rewards',JSON.stringify(unlocked));if(!fresh.length||document.querySelector('.reward-toast'))return;const toast=document.createElement('div');toast.className='reward-toast';toast.innerHTML=`<div class="reward-toast-icon">✧</div><div><p>CONQUISTA DESBLOQUEADA</p><b>${fresh[0]}</b></div><button aria-label="Fechar">×</button>`;toast.querySelector('button').onclick=()=>toast.remove();document.body.append(toast);setTimeout(()=>toast.remove(),7000)};
-      const rewardObserver=new MutationObserver(celebrateRewards);rewardObserver.observe(document.querySelector('#app'),{childList:true,subtree:true});celebrateRewards();
+      celebrateRewards();
     </script>
   </body>
 </html>
