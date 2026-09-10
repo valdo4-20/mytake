@@ -2,7 +2,7 @@ import {load, save, reset} from './storage.js';
 import {renderDiary} from './diary.js';
 import {searchTmdb, fetchTmdbMovie, discoverTmdb} from './tmdb.js';
 
-let state = load(), page = 'welcome', selected = 0, libraryFilter = 'all', search = '', modal = null, apiResults = [], apiMessage = '', discoverResults = [], discoverKey = '', discoverLoading = false;
+let state = load(), page = localStorage.getItem('mytake-session') ? 'home' : 'welcome', selected = 0, libraryFilter = 'all', search = '', modal = null, apiResults = [], apiMessage = '', discoverResults = [], discoverKey = '', discoverLoading = false;
 const app = document.querySelector('#app');
 const icons = {home:'⌂', library:'▦', diary:'✎', marathon:'◉', stats:'◌'};
 const minutes = n => `${Math.floor(n/60)}h ${String(n%60).padStart(2,'0')}min`;
