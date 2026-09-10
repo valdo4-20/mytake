@@ -1,5 +1,5 @@
-const CACHE = 'mytake-v15';
-const CORE = ['./', './index.html', './styles.css?v=3', './icon.svg', './manifest.webmanifest', './src/app.js?v=12', './src/data.js', './src/storage.js', './src/diary.js', './src/tmdb.js'];
+const CACHE = 'mytake-v21';
+const CORE = ['./', './index.html', './styles.css?v=3', './icon.svg', './manifest.webmanifest', './src/app.js?v=14', './src/data.js', './src/storage.js', './src/diary.js', './src/tmdb.js'];
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE))));
 self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
 self.addEventListener('fetch', event => {
