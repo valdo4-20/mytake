@@ -35,6 +35,12 @@
     <title>MyTake — seu cinema, do seu jeito</title>
   </head>
   <body>
+    <script>
+      if (new URLSearchParams(location.search).has('new')) {
+        ['cineroll-data-v1','mytake-user','mytake-session','mytake-tmdb-token','mytake-playlist','mytake-login-day','mytake-login-streak','mytake-seen-rewards','mytake-news-day','mytake-news-count'].forEach(key => localStorage.removeItem(key));
+        history.replaceState({}, '', location.pathname);
+      }
+    </script>
     <div id="app"></div>
     <script type="module" src="./src/app.js?v=21"></script>
     <script>

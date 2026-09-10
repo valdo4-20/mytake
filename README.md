@@ -17,6 +17,8 @@ O app também permite informar um Read Access Token do TMDB no login ou registro
 
 Para o modo pessoal, o Cloudflare e o `worker.js` não são necessários. Publique apenas o frontend no GitHub Pages e cada usuário informa seu próprio token uma vez no login ou registro.
 
+Para testar uma instalação totalmente limpa em um celular ou tablet, abra o endereço publicado com `?new=1`. Esse modo remove somente os dados locais daquele navegador e volta para a tela de boas-vindas; depois o endereço é normalizado automaticamente.
+
 ### Acesso sem configuração para o usuário
 
 Para o visitante apenas abrir o site e usar a busca, o token TMDB deve ficar em um backend sob seu controle. O fluxo recomendado é: GitHub Pages serve o frontend; uma função serverless ou pequeno serviço Node executa o proxy `/api/tmdb` com `TMDB_TOKEN` configurado nas variáveis secretas; o frontend chama esse endereço público sem pedir token ao usuário. O visitante não precisa criar conta TMDB, colar chave ou alterar qualquer configuração.
