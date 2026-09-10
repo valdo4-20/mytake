@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#09090b" />
+    <meta name="description" content="Seu diário pessoal de cinema." />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./styles.css?v=3" />
+    <style>
+      .brand { font-size: 0 !important; display: inline-flex !important; align-items: center; }
+      .brand span { display: none !important; }
+      .brand::before { display: none !important; }
+      .brand-logo { display: block; width: 150px; height: 60px; object-fit: contain; }
+      .auth-brand .brand-logo { width: 164px; height: 66px; }
+      .entry-art span { display: none !important; }
+      .entry-art::before { display: none !important; }
+      .entry-art { background: linear-gradient(145deg, #f4f0e9, #d9d1c7) !important; box-shadow: 28px 28px 0 #a99e95 !important; }
+      .entry-art-logo { display: block; width: 58%; height: 58%; object-fit: contain; transform: rotate(7deg); }
+      .api-key-field { display: grid; gap: 7px; color: #b8b5b7; font-size: 11px; margin: 16px 0; }
+      .api-key-field span { display: flex; justify-content: space-between; }
+      .api-key-field small { color: #77747a; font-size: 10px; }
+      .api-key-field input { background: #151519; border: 1px solid rgba(255,255,255,.12); border-radius: 7px; padding: 13px; color: #fff; outline: 0; }
+    </style>
+    <title>MyTake — seu cinema, do seu jeito</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="./src/app.js?v=12"></script>
+    <script>
+      const replaceLegacyBrand = () => document.querySelectorAll('.brand, .entry-art').forEach(brand => {
+        const legacyMark = brand.querySelector('span:first-child');
+        if (legacyMark) {
+          const logo = document.createElement('img');
+          logo.src = brand.matches('.entry-art') ? './fonts/logo-myticket-black.png' : './fonts/logo-myticket-white.png';
+          logo.alt = 'MyTake';
+          logo.className = brand.matches('.entry-art') ? 'entry-art-logo' : 'brand-logo';
+          legacyMark.replaceWith(logo);
+        }
+      });
+      new MutationObserver(replaceLegacyBrand).observe(document.querySelector('#app'), {childList: true, subtree: true});
+      replaceLegacyBrand();
+    </script>
+    <script>
+      const addTmdbLoginOption = () => document.querySelectorAll('#login-form, #register-form').forEach(form => {
+        if (form.querySelector('.api-key-field')) return;
+        const field = document.createElement('label');
+        field.className = 'api-key-field';
+        field.innerHTML = '<span>API TMDB <small>opcional</small></span><input type="password" name="tmdbToken" placeholder="Cole seu Read Access Token" autocomplete="off">';
+        form.insertBefore(field, form.querySelector('.auth-submit'));
+        const input = field.querySelector('input');
+        input.value = localStorage.getItem('mytake-tmdb-token') || '';
+        form.addEventListener('submit', () => { if (input.value.trim()) localStorage.setItem('mytake-tmdb-token', input.value.trim()); });
+      });
+      new MutationObserver(addTmdbLoginOption).observe(document.querySelector('#app'), {childList: true, subtree: true});
+      addTmdbLoginOption();
+    </script>
+  </body>
+</html>
