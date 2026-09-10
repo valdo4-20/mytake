@@ -1,5 +1,6 @@
 @font-face{font-family:Delight;src:url('./fonts/delight-vf.ttf') format('truetype');font-style:normal;font-weight:100 900;font-display:swap}
 .backup-tools{margin-top:42px;padding-top:24px;border-top:1px solid var(--line)}.backup-tools h2{font:32px Delight;margin:6px 0}.backup-tools p:not(.eyebrow){color:#999;font-size:11px;line-height:1.5}.backup-tools>div{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}.backup-tools .outline-button{margin:0;cursor:pointer}.backup-import input{display:none}
+.backup-entry{display:inline-block;margin-top:18px;color:#e98b80;font-size:12px;cursor:pointer}.backup-entry input{display:none}
 @font-face{font-family:Inter;src:url('./fonts/Inter_28pt-Regular.ttf') format('truetype');font-style:normal;font-weight:400;font-display:swap}
 @font-face{font-family:Inter;src:url('./fonts/Inter_28pt-SemiBold.ttf') format('truetype');font-style:normal;font-weight:600;font-display:swap}
 @font-face{font-family:Inter;src:url('./fonts/Inter_28pt-Bold.ttf') format('truetype');font-style:normal;font-weight:700;font-display:swap}
