@@ -2,14 +2,14 @@ import {load, save, reset} from './storage.js';
 import {renderDiary} from './diary.js';
 import {searchTmdb, fetchTmdbMovie, discoverTmdb} from './tmdb.js';
 
-let state = load(), page = localStorage.getItem('mytake-session') ? 'home' : 'welcome', selected = 0, libraryFilter = 'all', librarySort = 'added', libraryView = localStorage.getItem('mytake-library-view') || 'grid', search = '', modal = null, apiResults = [], apiMessage = '', discoverResults = [], discoverKey = '', discoverLoading = false;
+let state = load(), page = localStorage.getItem('mytake-session') ? 'home' : 'welcome', selected = 0, libraryFilter = 'all', librarySort = 'added', libraryView = localStorage.getItem('mytake-library-view') || 'grid', search = '', modal = null, apiResults = [], apiMessage = '', discoverResults = [], discoverKey = '', discoverLoading = false, libraryPage = 1, libraryPageSize = 24;
 const app = document.querySelector('#app');
 const icons = {home:'⌂', library:'▦', diary:'✎', marathon:'◉', stats:'◌'};
 const minutes = n => `${Math.floor(n/60)}h ${String(n%60).padStart(2,'0')}min`;
 const rating = n => n ? `${String(n).replace('.',',')} ★` : '—';
 const safe = v => String(v || '').replace(/[&<>"]/g, x => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[x]));
 function movie(id){return state.movies.find(m=>m.id===id)}
-function persist(){save(state)}
+function persist(){try{const data=JSON.stringify(state);if(data.length>5*1024*1024){console.warn('Biblioteca grande: '+Math.round(data.length/1024/1024)+'MB');return}save(state)}catch(e){console.error('Erro ao salvar:',e)}}
 const genreIds={Ação:28,Aventura:12,Animação:16,Comédia:35,Crime:80,Documentário:99,Drama:18,'Ficção científica':878,'Fantasia':14,Terror:27,Mistério:9648,Romance:10749};
 function discoverProfile(){const user=JSON.parse(localStorage.getItem('mytake-user')||'{}'), selectedGenres=new Set(user.genres||[]);state.movies.filter(movie=>movie.favorite||movie.status==='watched'||(movie.userRating||0)>=8).forEach(movie=>movie.genres?.forEach(genre=>selectedGenres.add(genre)));const ids=[...selectedGenres].map(genre=>genreIds[genre]).filter(Boolean);return {genres:[...selectedGenres],movieGenres:ids,tvGenres:ids,excludeMovies:state.movies.filter(movie=>movie.mediaType!=='tv'&&movie.tmdbId).map(movie=>movie.tmdbId),excludeTv:state.movies.filter(movie=>movie.mediaType==='tv'&&movie.tmdbId).map(movie=>movie.tmdbId)}}
 async function loadDiscover(){const profile=discoverProfile(), key=JSON.stringify(profile);if(discoverLoading||key===discoverKey)return;discoverKey=key;discoverLoading=true;try{discoverResults=await discoverTmdb(profile)}catch(error){discoverResults=[]}finally{discoverLoading=false;if(page==='home')render()}}
